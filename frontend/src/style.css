@@ -131,6 +131,14 @@ p {
   gap: 0.8rem;
 }
 
+.panel__header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .workspace__header {
   display: flex;
   align-items: center;
@@ -463,6 +471,15 @@ a {
 
   .filters {
     grid-template-columns: 1fr;
+  }
+
+  .panel__header--inline {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .panel__header-actions {
+    justify-content: space-between;
   }
 
   .modal-overlay {

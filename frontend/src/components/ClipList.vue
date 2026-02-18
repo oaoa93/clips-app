@@ -14,14 +14,17 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['edit', 'delete'])
+const emit = defineEmits(['create', 'edit', 'delete'])
 </script>
 
 <template>
   <section class="panel">
     <header class="panel__header panel__header--inline">
       <h2>Clips</h2>
-      <span class="pill">{{ clips.length }} total</span>
+      <div class="panel__header-actions">
+        <span class="pill">{{ clips.length }} total</span>
+        <button class="btn btn--primary" type="button" @click="emit('create')">Create clip</button>
+      </div>
     </header>
 
     <p v-if="loading" class="empty-state">Loading clips...</p>

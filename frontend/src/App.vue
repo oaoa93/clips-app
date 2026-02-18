@@ -151,7 +151,6 @@ async function handleDelete(clipId) {
         </div>
 
         <div class="workspace__actions">
-          <button class="btn btn--primary" type="button" @click="openCreateModal">Create clip</button>
           <span class="user-pill">{{ authStore.user?.email ?? 'Authenticated user' }}</span>
           <button class="btn btn--ghost" :disabled="authStore.loading" @click="handleLogout">
             Logout
@@ -179,6 +178,7 @@ async function handleDelete(clipId) {
         :clips="filteredClips"
         :loading="clipStore.loading"
         :deleting-id="clipStore.deletingId"
+        @create="openCreateModal"
         @edit="handleEdit"
         @delete="handleDelete"
       />
