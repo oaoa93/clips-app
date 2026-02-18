@@ -12,6 +12,10 @@ class ClipSeeder extends Seeder
      */
     public function run(): void
     {
+        if (Clip::query()->exists()) {
+            return;
+        }
+
         Clip::factory()->count(8)->create();
 
         Clip::factory()->create([
