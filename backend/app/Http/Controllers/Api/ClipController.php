@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Clip\StoreClipRequest;
 use App\Http\Requests\Clip\UpdateClipRequest;
 use App\Http\Resources\ClipResource;
+use App\Jobs\ProcessClipJob;
 use App\Models\Clip;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,6 +35,7 @@ class ClipController extends Controller
     public function store(StoreClipRequest $request): JsonResponse
     {
         $clip = Clip::create($request->validated());
+        ProcessClipJob::dispatch($clip);
 
         return ClipResource::make($clip)
             ->response()

@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\ProcessClipJob;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class ClipApiTest extends TestCase
@@ -66,6 +68,24 @@ class ClipApiTest extends TestCase
             'title' => 'My first clip',
             'status' => 'active',
         ]);
+    }
+
+    public function test_clip_processing_job_is_dispatched_on_creation(): void
+    {
+        Queue::fake();
+
+        $payload = [
+            'title' => 'Queue test clip',
+            'description' => 'Dispatch processing',
+            'url' => 'https://example.com/video/queue',
+            'status' => 'active',
+        ];
+
+        $response = $this->withHeaders($this->authHeaders())->postJson('/api/clips', $payload);
+
+        $response->assertCreated();
+
+        Queue::assertPushed(ProcessClipJob::class);
     }
 
     public function test_authenticated_user_can_update_clip(): void
