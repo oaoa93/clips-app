@@ -69,6 +69,31 @@ git clone <your-repo-url>
 cd clips-app
 ```
 
+### Fast path (recommended)
+
+Use the root `Makefile` to avoid running multiple commands manually.
+
+First time setup:
+
+```bash
+make setup
+```
+
+Start all services together (backend, queue worker, frontend, microservice):
+
+```bash
+make dev
+```
+
+Other useful targets:
+
+```bash
+make test
+make build
+make check
+make reset-db
+```
+
 ### 1) Backend setup
 
 ```bash
