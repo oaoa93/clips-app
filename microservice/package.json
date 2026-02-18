@@ -1,0 +1,17 @@
+{
+  "name": "microservice",
+  "version": "1.0.0",
+  "description": "Independent clip processing microservice",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
