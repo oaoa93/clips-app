@@ -30,7 +30,10 @@ const emit = defineEmits(['edit', 'delete'])
     <div v-else class="clip-grid">
       <article v-for="clip in clips" :key="clip.id" class="clip-card">
         <header class="clip-card__header">
-          <h3>{{ clip.title }}</h3>
+          <div class="clip-card__meta">
+            <h3>{{ clip.title }}</h3>
+            <p class="clip-card__code">CLIP-{{ clip.id }}</p>
+          </div>
           <span :class="['status-dot', `status-dot--${clip.status}`]">{{ clip.status }}</span>
         </header>
 

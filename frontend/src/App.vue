@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import AuthPanel from './components/AuthPanel.vue'
+import BaseModal from './components/BaseModal.vue'
 import ClipForm from './components/ClipForm.vue'
 import ClipList from './components/ClipList.vue'
 import { useAuthStore } from './stores/auth'
@@ -12,6 +13,7 @@ const clipStore = useClipStore()
 const searchTerm = ref('')
 const statusFilter = ref('all')
 const editingClip = ref(null)
+const isClipModalOpen = ref(false)
 const pageError = ref('')
 
 const filteredClips = computed(() => {
@@ -35,6 +37,12 @@ const formInitialValues = computed(
       url: '',
       status: 'active',
     },
+)
+const clipModalTitle = computed(() => (editingClip.value ? 'Edit clip' : 'Create clip'))
+const clipModalDescription = computed(() =>
+  editingClip.value
+    ? 'Adjust clip metadata and save the update.'
+    : 'Create a new clip entry with basic metadata.',
 )
 
 onMounted(async () => {
@@ -68,9 +76,21 @@ async function handleRegister(payload) {
 async function handleLogout() {
   await authStore.logout()
   clipStore.reset()
-  editingClip.value = null
+  closeClipModal()
   searchTerm.value = ''
   statusFilter.value = 'all'
+  pageError.value = ''
+}
+
+function openCreateModal() {
+  editingClip.value = null
+  pageError.value = ''
+  isClipModalOpen.value = true
+}
+
+function closeClipModal() {
+  isClipModalOpen.value = false
+  editingClip.value = null
   pageError.value = ''
 }
 
@@ -88,13 +108,14 @@ async function handleSaveClip(payload) {
     return
   }
 
-  editingClip.value = null
+  closeClipModal()
   pageError.value = ''
 }
 
 function handleEdit(clip) {
   pageError.value = ''
   editingClip.value = { ...clip }
+  isClipModalOpen.value = true
 }
 
 async function handleDelete(clipId) {
@@ -106,8 +127,8 @@ async function handleDelete(clipId) {
     return
   }
 
-  if (editingClip.value?.id === clipId) {
-    editingClip.value = null
+  if (editingClip.value?.id === clipId && isClipModalOpen.value) {
+    closeClipModal()
   }
 }
 </script>
@@ -124,12 +145,13 @@ async function handleDelete(clipId) {
 
     <div v-else class="workspace">
       <header class="workspace__header panel">
-        <div>
-          <h1>Clips Dashboard</h1>
-          <p>Manage and filter your video clips in real time.</p>
+        <div class="workspace__heading">
+          <h1>Clip App</h1>
+          <p>A minimal clip manager.</p>
         </div>
 
         <div class="workspace__actions">
+          <button class="btn btn--primary" type="button" @click="openCreateModal">Create clip</button>
           <span class="user-pill">{{ authStore.user?.email ?? 'Authenticated user' }}</span>
           <button class="btn btn--ghost" :disabled="authStore.loading" @click="handleLogout">
             Logout
@@ -153,14 +175,6 @@ async function handleDelete(clipId) {
         </label>
       </section>
 
-      <ClipForm
-        :mode="formMode"
-        :initial-values="formInitialValues"
-        :busy="clipStore.saving"
-        @submit="handleSaveClip"
-        @cancel="editingClip = null"
-      />
-
       <ClipList
         :clips="filteredClips"
         :loading="clipStore.loading"
@@ -168,6 +182,22 @@ async function handleDelete(clipId) {
         @edit="handleEdit"
         @delete="handleDelete"
       />
+
+      <BaseModal
+        :open="isClipModalOpen"
+        :title="clipModalTitle"
+        :description="clipModalDescription"
+        @close="closeClipModal"
+      >
+        <ClipForm
+          :mode="formMode"
+          :initial-values="formInitialValues"
+          :busy="clipStore.saving"
+          :external-error="pageError"
+          @submit="handleSaveClip"
+          @cancel="closeClipModal"
+        />
+      </BaseModal>
 
       <p v-if="pageError" class="error-message error-message--page">{{ pageError }}</p>
       <p v-else-if="clipStore.error" class="error-message error-message--page">{{ clipStore.error }}</p>

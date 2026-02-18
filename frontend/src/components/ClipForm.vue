@@ -19,6 +19,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  externalError: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits(['submit', 'cancel'])
@@ -86,46 +90,38 @@ function submit() {
 </script>
 
 <template>
-  <section class="panel">
-    <header class="panel__header">
-      <h2>{{ mode === 'edit' ? 'Edit clip' : 'Create clip' }}</h2>
-    </header>
+  <form class="clip-form" @submit.prevent="submit">
+    <label>
+      Title
+      <input v-model="form.title" maxlength="180" type="text" />
+    </label>
 
-    <form class="clip-form" @submit.prevent="submit">
-      <label>
-        Title
-        <input v-model="form.title" maxlength="180" type="text" />
-      </label>
+    <label>
+      Description
+      <textarea v-model="form.description" rows="4" />
+    </label>
 
-      <label>
-        Description
-        <textarea v-model="form.description" rows="4" />
-      </label>
+    <label>
+      URL
+      <input v-model="form.url" type="url" />
+    </label>
 
-      <label>
-        URL
-        <input v-model="form.url" type="url" />
-      </label>
+    <label>
+      Status
+      <select v-model="form.status">
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </label>
 
-      <label>
-        Status
-        <select v-model="form.status">
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-      </label>
+    <div class="clip-form__actions">
+      <button class="btn btn--primary" :disabled="busy" type="submit">
+        {{ busy ? 'Saving...' : mode === 'edit' ? 'Save changes' : 'Create clip' }}
+      </button>
 
-      <div class="clip-form__actions">
-        <button class="btn btn--primary" :disabled="busy" type="submit">
-          {{ busy ? 'Saving...' : mode === 'edit' ? 'Update clip' : 'Create clip' }}
-        </button>
+      <button class="btn btn--ghost" type="button" @click="emit('cancel')">Cancel</button>
+    </div>
 
-        <button v-if="mode === 'edit'" class="btn btn--ghost" type="button" @click="emit('cancel')">
-          Cancel
-        </button>
-      </div>
-
-      <p v-if="localError" class="error-message">{{ localError }}</p>
-    </form>
-  </section>
+    <p v-if="localError || externalError" class="error-message">{{ localError || externalError }}</p>
+  </form>
 </template>
